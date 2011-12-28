@@ -74,7 +74,7 @@ float mydiv ( float a, float b ) {
   return a / b;
 }
 
-bool isWhitespace ( char c ) {
+int isWhitespace ( char c ) {
   return c == ' ' || c == '\t' || c == ' ' || c == '\n' || c == '\r';
 }
 
@@ -96,8 +96,21 @@ Operator *isOperator ( char c ) {
   return operator;
 }
 
-Operator *isNumber ( char c ) {
+int *isNumber ( char c ) {
   return c >= 48 && c < 58;
+}
+
+float getNumber ( char *c ) {
+  return atof ( c );
+}
+
+int getNumberLength ( char *c ) {
+  int length = 0;
+  while ( isNumber ( *c ) || *c == '.' ) {
+    length++;
+    c++;
+  }
+  return length;
 }
 
 Expression *parse ( char *Input ) {
@@ -108,8 +121,34 @@ Expression *parse ( char *Input ) {
     } else if ( isWhitespace ( Input[i] ) ) {
     } else if ( isOperator ( Input[i] ) ) {
     } else if ( isNumber ( Input[i] ) ) {
+
     }
   }
+}
+
+Expression *expression ( int index ) {
+  static unsigned int num = 0;
+  static Expression *expressions  = NULL;
+  Expression *back = NULL;
+  if ( index < 0 ) {
+    if ( index == -1 ) {
+      if ( num == 0 ) {
+        // initialize the pointer
+        expressions = calloc ( num, sizeof ( Element ) );
+      }
+      num++;
+      // allocate new memory for the new object
+      expressions = realloc ( expressions, num * sizeof ( Element ) );
+      // set the new allocated memory to 0
+      memset ( expressions + ( num - 1 ) * sizeof ( Element ), 0, sizeof ( Element ) );
+      back = &expressions[num - 1];
+    } else if ( index = -2 ) {
+      free ( expressions );
+    }
+  } else {
+    back = &expressions[index];
+  }
+  return back;
 }
 
 float calc ( Expression *Ausdruck ) {
@@ -117,7 +156,7 @@ float calc ( Expression *Ausdruck ) {
 }
 
 void freeExpression ( Expression *Ausdruck ) {
-
+  expression ( -2 );
 }
 
 // function which processes the input and returns the result das double
