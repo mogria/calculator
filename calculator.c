@@ -115,13 +115,14 @@ int getNumberLength ( char *c ) {
 
 Expression *parse ( char *Input ) {
   unsigned int i;
+  
   for ( i = 0; Input[i] != '\0' && Input[i] != ')'; i++ ) {
     if ( Input[i] == '(' ) {
       parse ( Input[i] );
     } else if ( isWhitespace ( Input[i] ) ) {
     } else if ( isOperator ( Input[i] ) ) {
     } else if ( isNumber ( Input[i] ) ) {
-
+      
     }
   }
 }
@@ -142,6 +143,8 @@ Expression *expression ( int index ) {
       // set the new allocated memory to 0
       memset ( expressions + ( num - 1 ) * sizeof ( Element ), 0, sizeof ( Element ) );
       back = &expressions[num - 1];
+      back.operator = '+';
+      back.funcp = myadd;
     } else if ( index = -2 ) {
       free ( expressions );
     }
@@ -152,7 +155,17 @@ Expression *expression ( int index ) {
 }
 
 float calc ( Expression *Ausdruck ) {
+  float zahl1 = Ausdruck.zahl1;
+  float zahl2 = Ausdruck.zahl2;
+  if ( Ausdruck.expression1 != NULL ) {
+    zahl1 = calc ( Ausdruck.expression1 );
+  }
 
+  if ( Ausdruck.expression2 != NULL ) {
+    zahl2 = calc ( Ausdruck.expression1 );
+  }
+
+  return Ausdruck.operator.funcp ( zahl1, zahl2 );
 }
 
 void freeExpression ( Expression *Ausdruck ) {
