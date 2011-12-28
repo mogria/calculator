@@ -18,6 +18,13 @@ typedef struct Expression {
 } Expression;
 
 float process ( char *Input );
+float myadd ( float a, float b );
+float mysub ( float a, float b );
+float mymul ( float a, float b );
+float mydiv ( float a, float b );
+Expression *parse ( char *Input );
+float calc ( Expression *Ausdruck );
+void freeExpression ( Expression *Ausdruck );
 
 int main() {
   char Input[MAX_INPUT]; // input of the user
@@ -48,6 +55,34 @@ int main() {
   // bye :D
   puts ( "bye!" );
   return 0;
+}
+
+float myadd ( float a, float b ) {
+  return a + b;
+}
+
+float mysub ( float a, float b ) {
+  return a - b;
+}
+
+float mymul ( float a, float b ) {
+  return a * b;
+}
+
+float mydiv ( float a, float b ) {
+  return a / b;
+}
+
+Expression *parse ( char *Input ) {
+
+}
+
+float calc ( Expression *Ausdruck ) {
+
+}
+
+void freeExpression ( Expression *Ausdruck ) {
+
 }
 
 // function which processes the input and returns the result das double
