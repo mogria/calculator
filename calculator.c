@@ -18,7 +18,6 @@ int main() {
   do {
     sprintf ( Format, "%%%is", MAX_INPUT );
     scanf ( Format, Input );
-    printf("%s:%s", Format, Input );
   } while ( strlen(Input) != 0 );
   puts ( "bye!" );
   return 0;
