@@ -4,11 +4,16 @@
 
 #define MAX_INPUT 80
 
-typedef struct Expression {
-  int zahl1;
-  struct Expression *expression1;
+typedef struct Operator {
   char operator;
-  int zahl2;
+  float ( *funcp ) ( float, float );
+} Operator;
+
+typedef struct Expression {
+  float zahl1;
+  struct Expression *expression1;
+  Operator operator;
+  float zahl2;
   struct Expression *expression2;
 } Expression;
 
@@ -23,7 +28,7 @@ int main() {
   printf ( "Initializing Calculator 15 ...\n" );
 
   // Generating the format of the input string according to MAX_INPUT
-  sprintf ( Format, "%%%is", MAX_INPUT );
+  sprintf ( Format, "%%%is", MAX_INPUT - 1 );
 
   do {
     // printing the shell prompt
@@ -36,7 +41,6 @@ int main() {
     if ( More = ( strcmp ( Input, "exit" ) != 0 ) ) {
       printf ( "=> %f\n", process ( Input ) );
     }
-    printf ( "more: %i \n", More );
 
     // end programm if input is empty
   } while ( More );
@@ -50,3 +54,4 @@ int main() {
 float process ( char *Input ) {
   return atof ( Input );
 }
+
