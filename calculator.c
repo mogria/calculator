@@ -3,6 +3,7 @@
 #include <string.h> // string functions
 
 #define MAX_INPUT 80
+#define NUM_OPERATIONS 4
 
 typedef struct Operator {
   char operator;
@@ -73,8 +74,42 @@ float mydiv ( float a, float b ) {
   return a / b;
 }
 
-Expression *parse ( char *Input ) {
+bool isWhitespace ( char c ) {
+  return c == ' ' || c == '\t' || c == ' ' || c == '\n' || c == '\r';
+}
 
+Operator *isOperator ( char c ) {
+  Operator *operator = NULL;
+  static Operator operations[NUM_OPERATIONS] = {
+    {'+', myadd},
+    {'-', mysub},
+    {'*', mymul},
+    {'/', mydiv}
+  };
+  int i;
+
+  for ( i = 0; i < NUM_OPERATIONS && operator == NULL i++ ) {
+    if ( operations[i].operator == c ) {
+      operator = &operations[i];
+    }
+  }
+  return operator;
+}
+
+Operator *isNumber ( char c ) {
+  return c >= 48 && c < 58;
+}
+
+Expression *parse ( char *Input ) {
+  unsigned int i;
+  for ( i = 0; Input[i] != '\0' && Input[i] != ')'; i++ ) {
+    if ( Input[i] == '(' ) {
+      parse ( Input[i] );
+    } else if ( isWhitespace ( Input[i] ) ) {
+    } else if ( isOperator ( Input[i] ) ) {
+    } else if ( isNumber ( Input[i] ) ) {
+    }
+  }
 }
 
 float calc ( Expression *Ausdruck ) {
