@@ -35,24 +35,21 @@ int getNumberLength ( char *c );
 
 int main() {
   char Input[MAX_INPUT]; // input of the user
-  char Format[20]; // format of the input
   short More;
 
   // Intro
   printf ( "Initializing Calculator 15 ...\n" );
 
   // Generating the format of the input string according to MAX_INPUT
-  sprintf ( Format, "%%%is", MAX_INPUT - 1 );
-
   do {
     // printing the shell prompt
     printf ( "c15> " );
 
     // reading the input
-    scanf ( Format, Input );
+    fgets ( Input, MAX_INPUT, stdin );
 
     // only process input if Input is not empty
-    if ( (More = ( strcmp ( Input, "exit" ) != 0 ) ) ) {
+    if ( (More = ( memcmp ( Input, "exit", 4 ) != 0 ) ) ) {
       printf ( "=> %f\n", process ( Input ) );
     }
 
@@ -162,17 +159,24 @@ Expression *parse ( char *Input ) {
 
 Expression *getExpression ( int index ) {
   static unsigned int num = 0;
-  static Expression *expressions  = NULL;
+  static Expression *expressions = NULL;
   Expression *back = NULL;
   if ( index < 0 ) {
     if ( index == -1 ) {
       if ( num == 0 ) {
         // initialize the pointer
         expressions = calloc ( num, sizeof ( Expression ) );
+        if ( expressions == NULL )  {
+          puts ( "calloc: Cannot allocate enougth memory" );
+          exit ( 1 );
+        }
       }
       num++;
       // allocate new memory for the new object
       expressions = realloc ( expressions, num * sizeof ( Expression ) );
+      if ( expressions == NULL ) {
+        puts ( "realloc: Cannot allocate enougth memory" );
+      }
       // set the new allocated memory to 0
       memset ( expressions + ( num - 1 ) * sizeof ( Expression ), 0, sizeof ( Expression ) );
       back = &expressions[num - 1];
