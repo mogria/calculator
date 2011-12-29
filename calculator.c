@@ -8,6 +8,7 @@
 typedef struct Operator {
   char operator;
   float ( *funcp ) ( float, float );
+  int value;
 } Operator;
 
 typedef struct Expression {
@@ -74,17 +75,13 @@ float mydiv ( float a, float b ) {
   return a / b;
 }
 
-int isWhitespace ( char c ) {
-  return c == ' ' || c == '\t' || c == ' ' || c == '\n' || c == '\r';
-}
-
 Operator *isOperator ( char c ) {
   Operator *operator = NULL;
   static Operator operations[NUM_OPERATIONS] = {
-    {'+', myadd},
-    {'-', mysub},
-    {'*', mymul},
-    {'/', mydiv}
+    {'+', myadd, 40},
+    {'-', mysub, 40},
+    {'*', mymul, 20},
+    {'/', mydiv, 20}
   };
   int i;
 
@@ -115,16 +112,47 @@ int getNumberLength ( char *c ) {
 
 Expression *parse ( char *Input ) {
   unsigned int i;
-  
+  short first_number = 1;
+  Operator *operator;
+  Expression *current_expression = expression ( -1 );
+  Expressoin *back_expression = current_expression;
   for ( i = 0; Input[i] != '\0' && Input[i] != ')'; i++ ) {
     if ( Input[i] == '(' ) {
-      parse ( Input[i] );
-    } else if ( isWhitespace ( Input[i] ) ) {
-    } else if ( isOperator ( Input[i] ) ) {
+      if ( first_number == 1 ) {
+        current_expression->expression1 = parse ( Input[i] );
+        first_number = 0;
+      } else {
+        current_expression->expression2 = parse ( Input[i] );
+        first_number = 1;
+      }
+    } else if ( operator = isOperator ( Input[i] ) ) {
+      if ( first_number == 0 ) {
+        current_expression->operator = operator;
+      } else {
+        Expression *new_expression = expression ( -1 );
+        new_expression->operator = operator;
+        if ( new_expression->operator->value <= current_operator->operator->value ) {
+          new_expression->expression2 = current_expression;
+          current_expression = new_expression;
+          back_expression = current_expression;
+        } else {
+          current_expression->expression1 = new_expression;
+          current_expression = new_expression;
+        }
+      }
     } else if ( isNumber ( Input[i] ) ) {
       
+      i += getNumberLength ( Input[i] ) - 1;
+      if ( first_number == 1 ) {
+        current_expression->zahl1 = getNumber ( Input [i] );
+        first_number = 0;
+      } else {
+        current_expression->zahl2 = getNumber ( Input [i] );
+        first_number = 1;
+      }
     }
   }
+  return back_expression;
 }
 
 Expression *expression ( int index ) {
@@ -145,8 +173,10 @@ Expression *expression ( int index ) {
       back = &expressions[num - 1];
       back.operator = '+';
       back.funcp = myadd;
+      back.value = 40;
     } else if ( index = -2 ) {
       free ( expressions );
+      num = 0;
     }
   } else {
     back = &expressions[index];
@@ -155,25 +185,27 @@ Expression *expression ( int index ) {
 }
 
 float calc ( Expression *Ausdruck ) {
-  float zahl1 = Ausdruck.zahl1;
-  float zahl2 = Ausdruck.zahl2;
+  float zahl1 = Ausdruck->zahl1;
+  float zahl2 = Ausdruck->zahl2;
   if ( Ausdruck.expression1 != NULL ) {
-    zahl1 = calc ( Ausdruck.expression1 );
+    zahl1 = calc ( Ausdruck->expression1 );
   }
 
   if ( Ausdruck.expression2 != NULL ) {
-    zahl2 = calc ( Ausdruck.expression1 );
+    zahl2 = calc ( Ausdruck->expression1 );
   }
 
-  return Ausdruck.operator.funcp ( zahl1, zahl2 );
+  return Ausdruck->operator.funcp ( zahl1, zahl2 );
 }
 
-void freeExpression ( Expression *Ausdruck ) {
+void freeExpression ( ) {
   expression ( -2 );
 }
 
 // function which processes the input and returns the result das double
 float process ( char *Input ) {
-  return atof ( Input );
+  float result = calc ( parse ( Input ) );
+  freeExpression ( );
+  return result;
 }
 
