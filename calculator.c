@@ -14,7 +14,7 @@ typedef struct Operator {
 typedef struct Expression {
   float zahl1;
   struct Expression *expression1;
-  Operator operator;
+  Operator *operator;
   float zahl2;
   struct Expression *expression2;
 } Expression;
@@ -25,8 +25,13 @@ float mysub ( float a, float b );
 float mymul ( float a, float b );
 float mydiv ( float a, float b );
 Expression *parse ( char *Input );
+Expression *getExpression ( int index );
 float calc ( Expression *Ausdruck );
-void freeExpression ( Expression *Ausdruck );
+void freeExpression ( );
+Operator *isOperator ( char c );
+int isNumber ( char c );
+float getNumber ( char *c );
+int getNumberLength ( char *c );
 
 int main() {
   char Input[MAX_INPUT]; // input of the user
@@ -85,7 +90,7 @@ Operator *isOperator ( char c ) {
   };
   int i;
 
-  for ( i = 0; i < NUM_OPERATIONS && operator == NULL i++ ) {
+  for ( i = 0; i < NUM_OPERATIONS && operator == NULL; i++ ) {
     if ( operations[i].operator == c ) {
       operator = &operations[i];
     }
@@ -93,7 +98,7 @@ Operator *isOperator ( char c ) {
   return operator;
 }
 
-int *isNumber ( char c ) {
+int isNumber ( char c ) {
   return c >= 48 && c < 58;
 }
 
@@ -114,24 +119,24 @@ Expression *parse ( char *Input ) {
   unsigned int i;
   short first_number = 1;
   Operator *operator;
-  Expression *current_expression = expression ( -1 );
-  Expressoin *back_expression = current_expression;
+  Expression *current_expression = getExpression ( -1 );
+  Expression *back_expression = current_expression;
   for ( i = 0; Input[i] != '\0' && Input[i] != ')'; i++ ) {
     if ( Input[i] == '(' ) {
       if ( first_number == 1 ) {
-        current_expression->expression1 = parse ( Input[i] );
+        current_expression->expression1 = parse ( &Input[i] );
         first_number = 0;
       } else {
-        current_expression->expression2 = parse ( Input[i] );
+        current_expression->expression2 = parse ( &Input[i] );
         first_number = 1;
       }
     } else if ( operator = isOperator ( Input[i] ) ) {
       if ( first_number == 0 ) {
         current_expression->operator = operator;
       } else {
-        Expression *new_expression = expression ( -1 );
+        Expression *new_expression = getExpression ( -1 );
         new_expression->operator = operator;
-        if ( new_expression->operator->value <= current_operator->operator->value ) {
+        if ( new_expression->operator->value <= current_expression->operator->value ) {
           new_expression->expression2 = current_expression;
           current_expression = new_expression;
           back_expression = current_expression;
@@ -142,12 +147,12 @@ Expression *parse ( char *Input ) {
       }
     } else if ( isNumber ( Input[i] ) ) {
       
-      i += getNumberLength ( Input[i] ) - 1;
+      i += getNumberLength ( & Input[i] ) - 1;
       if ( first_number == 1 ) {
-        current_expression->zahl1 = getNumber ( Input [i] );
+        current_expression->zahl1 = getNumber ( &Input [i] );
         first_number = 0;
       } else {
-        current_expression->zahl2 = getNumber ( Input [i] );
+        current_expression->zahl2 = getNumber ( &Input [i] );
         first_number = 1;
       }
     }
@@ -155,7 +160,7 @@ Expression *parse ( char *Input ) {
   return back_expression;
 }
 
-Expression *expression ( int index ) {
+Expression *getExpression ( int index ) {
   static unsigned int num = 0;
   static Expression *expressions  = NULL;
   Expression *back = NULL;
@@ -163,17 +168,17 @@ Expression *expression ( int index ) {
     if ( index == -1 ) {
       if ( num == 0 ) {
         // initialize the pointer
-        expressions = calloc ( num, sizeof ( Element ) );
+        expressions = calloc ( num, sizeof ( Expression ) );
       }
       num++;
       // allocate new memory for the new object
-      expressions = realloc ( expressions, num * sizeof ( Element ) );
+      expressions = realloc ( expressions, num * sizeof ( Expression ) );
       // set the new allocated memory to 0
-      memset ( expressions + ( num - 1 ) * sizeof ( Element ), 0, sizeof ( Element ) );
+      memset ( expressions + ( num - 1 ) * sizeof ( Expression ), 0, sizeof ( Expression ) );
       back = &expressions[num - 1];
-      back.operator = '+';
-      back.funcp = myadd;
-      back.value = 40;
+      back->operator = '+';
+      back->funcp = myadd;
+      back->value = 40;
     } else if ( index = -2 ) {
       free ( expressions );
       num = 0;
@@ -187,19 +192,19 @@ Expression *expression ( int index ) {
 float calc ( Expression *Ausdruck ) {
   float zahl1 = Ausdruck->zahl1;
   float zahl2 = Ausdruck->zahl2;
-  if ( Ausdruck.expression1 != NULL ) {
+  if ( Ausdruck->expression1 != NULL ) {
     zahl1 = calc ( Ausdruck->expression1 );
   }
 
-  if ( Ausdruck.expression2 != NULL ) {
+  if ( Ausdruck->expression2 != NULL ) {
     zahl2 = calc ( Ausdruck->expression1 );
   }
 
-  return Ausdruck->operator.funcp ( zahl1, zahl2 );
+  return Ausdruck->operator->funcp ( zahl1, zahl2 );
 }
 
 void freeExpression ( ) {
-  expression ( -2 );
+  getExpression ( -2 );
 }
 
 // function which processes the input and returns the result das double
