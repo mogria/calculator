@@ -52,7 +52,7 @@ int main() {
     scanf ( Format, Input );
 
     // only process input if Input is not empty
-    if ( More = ( strcmp ( Input, "exit" ) != 0 ) ) {
+    if ( (More = ( strcmp ( Input, "exit" ) != 0 ) ) ) {
       printf ( "=> %f\n", process ( Input ) );
     }
 
@@ -130,7 +130,7 @@ Expression *parse ( char *Input ) {
         current_expression->expression2 = parse ( &Input[i] );
         first_number = 1;
       }
-    } else if ( operator = isOperator ( Input[i] ) ) {
+    } else if ( ( operator = isOperator ( Input[i] ) ) != NULL ) {
       if ( first_number == 0 ) {
         current_expression->operator = operator;
       } else {
@@ -176,10 +176,8 @@ Expression *getExpression ( int index ) {
       // set the new allocated memory to 0
       memset ( expressions + ( num - 1 ) * sizeof ( Expression ), 0, sizeof ( Expression ) );
       back = &expressions[num - 1];
-      back->operator = '+';
-      back->funcp = myadd;
-      back->value = 40;
-    } else if ( index = -2 ) {
+      back->operator = isOperator('+');
+    } else if ( index == -2 ) {
       free ( expressions );
       num = 0;
     }
