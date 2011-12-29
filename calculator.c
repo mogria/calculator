@@ -113,6 +113,7 @@ int getNumberLength ( char *c ) {
 }
 
 Expression *parse ( char *Input ) {
+  puts ( "parsing .. " );
   unsigned int i;
   short first_number = 1;
   Operator *operator;
@@ -121,10 +122,10 @@ Expression *parse ( char *Input ) {
   for ( i = 0; Input[i] != '\0' && Input[i] != ')'; i++ ) {
     if ( Input[i] == '(' ) {
       if ( first_number == 1 ) {
-        current_expression->expression1 = parse ( &Input[i] );
+        current_expression->expression1 = parse ( &Input[i + 1] );
         first_number = 0;
       } else {
-        current_expression->expression2 = parse ( &Input[i] );
+        current_expression->expression2 = parse ( &Input[i + 1] );
         first_number = 1;
       }
     } else if ( ( operator = isOperator ( Input[i] ) ) != NULL ) {
@@ -133,12 +134,15 @@ Expression *parse ( char *Input ) {
       } else {
         Expression *new_expression = getExpression ( -1 );
         new_expression->operator = operator;
-        if ( new_expression->operator->value <= current_expression->operator->value ) {
+        if ( new_expression->operator->value > current_expression->operator->value ) {
+          puts ( "new lower " );
           new_expression->expression2 = current_expression;
-          current_expression = new_expression;
-          back_expression = current_expression;
+          back_expression = current_expression = new_expression;
         } else {
-          current_expression->expression1 = new_expression;
+          puts ( "new higher " );
+          current_expression->expression2 = new_expression;
+          new_expression->zahl2 = current_expression->zahl2;
+          current_expression->zahl2 = 0;
           current_expression = new_expression;
         }
       }
@@ -193,16 +197,23 @@ Expression *getExpression ( int index ) {
 }
 
 float calc ( Expression *Ausdruck ) {
+  puts ( "calculating " );
   float zahl1 = Ausdruck->zahl1;
   float zahl2 = Ausdruck->zahl2;
+  puts ( "  check expression 1 " );
   if ( Ausdruck->expression1 != NULL ) {
+    puts ( "  using expression 1 " );
     zahl1 = calc ( Ausdruck->expression1 );
   }
 
+  puts ( "  check expression 2 " );
   if ( Ausdruck->expression2 != NULL ) {
-    zahl2 = calc ( Ausdruck->expression1 );
+    puts ( "  using expression 2 " );
+    zahl2 = calc ( Ausdruck->expression2 );
   }
 
+  puts   ( "  calling function pointer of operator" );
+  printf ( "  %f %c %f\n", zahl1, Ausdruck->operator->operator, zahl2 );
   return Ausdruck->operator->funcp ( zahl1, zahl2 );
 }
 
