@@ -143,8 +143,6 @@ Expression *parse ( char *Input ) {
         }
       }
     } else if ( isNumber ( Input[i] ) ) {
-      
-      i += getNumberLength ( & Input[i] ) - 1;
       if ( first_number == 1 ) {
         current_expression->zahl1 = getNumber ( &Input [i] );
         first_number = 0;
@@ -152,6 +150,7 @@ Expression *parse ( char *Input ) {
         current_expression->zahl2 = getNumber ( &Input [i] );
         first_number = 1;
       }
+      i += getNumberLength ( & Input[i] ) - 1;
     }
   }
   return back_expression;
@@ -181,6 +180,8 @@ Expression *getExpression ( int index ) {
       memset ( expressions + ( num - 1 ) * sizeof ( Expression ), 0, sizeof ( Expression ) );
       back = &expressions[num - 1];
       back->operator = isOperator('+');
+      back->expression1 = NULL;
+      back->expression2 = NULL;
     } else if ( index == -2 ) {
       free ( expressions );
       num = 0;
