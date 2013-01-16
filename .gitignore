@@ -1,0 +1,11 @@
+bin/
+build/
+*.o
+*.obj
+*.exe
+*.a
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+calculator
