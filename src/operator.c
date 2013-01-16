@@ -22,25 +22,25 @@ static double (*functions[])(double, double) = { myadd, mysub, mymul, mydiv };
 
 
 int is_operator(char sign) {
-  int x:
+  int x;
   for(x = 0; x < sizeof(signs); x++) {
     if(sign == signs[x]) break;
   }
   x++;
 
-  x > sizeof(signs) && (x = 0);
+  if(x > sizeof(signs)) x = 0;
   return x;
 }
 
 void operator_construct(void *_self, va_list *args) {
-  operator *self = (operator *)self;
-  char sign = va_arg(args, char);
+  struct operator *self = (struct operator *) _self;
+  char sign = va_arg(args, int);
   int index = is_operator(sign);
 
   if(index) {
     index--;
-    self->sign = sings[index];
-    self->priority = priorties[index];
+    self->sign = signs[index];
+    self->priority = priorities[index];
     self->calc = functions[index];
   }
 }

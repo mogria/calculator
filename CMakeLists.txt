@@ -9,6 +9,8 @@ set (CMAKE_C_FLAGS "-g -Wall")
 
 add_subdirectory(lib)
 
+include_directories(lib/libobj/include)
+
 add_executable(calculator ${CALCULATOR_SOURCE_FILES})
 target_link_libraries(calculator libobj)
 
