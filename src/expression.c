@@ -1,5 +1,7 @@
 #include "expression.h"
 
+INIT_CLASS(expression, expression_construct, expression_destruct);
+
 double expression_result(void *_self) {
   struct expression *self = (struct expression *)_self;
   double number1, number2;

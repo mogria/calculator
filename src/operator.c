@@ -1,5 +1,7 @@
 #include "operator.h"
 
+INIT_CLASS(operator, operator_construct, operator_destruct);
+
 static double myadd(double a, double b) {
   return a + b;
 }

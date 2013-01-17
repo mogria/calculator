@@ -10,7 +10,7 @@ CLASS(operator);
  double (*calc)(double, double);
  int priority;
  char sign; 
-END_CLASS(operator, operator_construct, operator_destruct);
+END_CLASS;
 
 int is_operator(char sign);
 
