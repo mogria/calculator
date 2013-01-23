@@ -36,11 +36,10 @@ int is_operator(char sign) {
 }
 
 
-void operator_calc(void *_self, ...) {
+double operator_calc(void *_self, ...) {
   struct operator *self = (struct operator *) _self;
-  size_t x;
   va_list args;
-  va_start(args);
+  va_start(args, _self);
   double result = self->calc(&args);
   va_end(args);
   return result;
