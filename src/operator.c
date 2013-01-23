@@ -2,25 +2,26 @@
 
 INIT_CLASS(operator, operator_construct, operator_destruct);
 
-static double myadd(double a, double b) {
-  return a + b;
+static double myadd(va_list *args) {
+  return va_arg(*args, double) + va_arg(*args, double);
 }
 
-static double mysub(double a, double b) {
-  return a - b;
+static double mysub(va_list *args) {
+  return va_arg(*args, double) - va_arg(*args, double);
 }
 
-static double mymul(double a, double b) {
-  return a * b;
+static double mymul(va_list *args) {
+  return va_arg(*args, double) * va_arg(*args, double);
 }
 
-static double mydiv(double a, double b) {
-  return a / b;
+static double mydiv(va_list *args) {
+  return va_arg(*args, double) / va_arg(*args, double);
 }
 
 static char signs[] = { '+', '-', '*', '/'};
 static int priorities[] = { 50, 50, 100, 100 };
-static double (*functions[])(double, double) = { myadd, mysub, mymul, mydiv };
+static size_t arguments[] = { 2, 2, 2, 2 };
+static double (*functions[])(va_list *args) = { myadd, mysub, mymul, mydiv };
 
 
 int is_operator(char sign) {
@@ -34,15 +35,27 @@ int is_operator(char sign) {
   return x;
 }
 
+
+void operator_calc(void *_self, ...) {
+  struct operator *self = (struct operator *) _self;
+  size_t x;
+  va_list args;
+  va_start(args);
+  double result = self->calc(&args);
+  va_end(args);
+  return result;
+}
+
 void operator_construct(void *_self, va_list *args) {
   struct operator *self = (struct operator *) _self;
-  char sign = va_arg(args, int);
+  char sign = va_arg(*args, int);
   int index = is_operator(sign);
 
   if(index) {
     index--;
     self->sign = signs[index];
     self->priority = priorities[index];
+    self->arguments = arguments[index];
     self->calc = functions[index];
   }
 }
